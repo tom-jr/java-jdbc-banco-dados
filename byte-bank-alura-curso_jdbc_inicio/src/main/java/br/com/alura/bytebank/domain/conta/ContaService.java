@@ -2,14 +2,20 @@ package br.com.alura.bytebank.domain.conta;
 
 import br.com.alura.bytebank.domain.RegraDeNegocioException;
 import br.com.alura.bytebank.domain.cliente.Cliente;
+import br.com.alura.bytebank.repostory.ContaDAO;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
 public class ContaService {
+    private final ContaDAO dao;
 
     private Set<Conta> contas = new HashSet<>();
+
+    public ContaService(ContaDAO dao) {
+        this.dao = dao;
+    }
 
     public Set<Conta> listarContasAbertas() {
         return contas;
@@ -28,6 +34,8 @@ public class ContaService {
         }
 
         contas.add(conta);
+        ContaDAO dao = new ContaDAO();
+        dao.salvar(conta);
     }
 
     public void realizarSaque(Integer numeroDaConta, BigDecimal valor) {
