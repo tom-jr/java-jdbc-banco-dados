@@ -14,6 +14,8 @@ public class ConnectionFactory {
             properties.setProperty("password", "postgres");
             properties.setProperty("sll", "true");
 
+            System.out.println("connection opened.");
+
             return DriverManager.getConnection(url, properties);
 
         } catch (SQLException e) {

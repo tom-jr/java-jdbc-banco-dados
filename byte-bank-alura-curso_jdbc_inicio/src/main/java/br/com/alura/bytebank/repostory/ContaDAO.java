@@ -15,10 +15,10 @@ import java.util.Set;
 import br.com.alura.bytebank.ConnectionFactory;
 
 public class ContaDAO {
-    private final Connection connection;
+    private final ConnectionFactory factory;
 
     public ContaDAO() {
-        this.connection = new ConnectionFactory().connectionFactory();
+        this.factory = new ConnectionFactory();
     }
 
     public void salvar(Conta conta) throws SQLException {
@@ -30,9 +30,11 @@ public class ContaDAO {
                     """;
 
 
-        PreparedStatement statement = null;
+        PreparedStatement statement =null;
+        Connection connection = null;
         try {
-            statement = this.connection.prepareStatement(sql);
+            connection = this.factory.connectionFactory();
+            statement = connection.prepareStatement(sql);
             statement.setInt(1, conta.getNumero());
             statement.setBigDecimal(2, BigDecimal.ZERO);
             statement.setString(3, conta.getTitular().getNome());
@@ -45,6 +47,7 @@ public class ContaDAO {
             throw new RuntimeException(e);
         } finally {
             statement.close();
+            disconnect(connection);
         }
     }
 
@@ -53,6 +56,7 @@ public class ContaDAO {
         String sql = """
                 select * from conta;
                 """;
+        Connection connection = this.factory.connectionFactory();
         PreparedStatement statement = connection.prepareStatement(sql);
 
         ResultSet result = statement.executeQuery();
@@ -64,12 +68,14 @@ public class ContaDAO {
         }
         statement.close();
         result.close();
+        disconnect(connection);
         return contas;
     }
 
 
     public Conta buscarContarPorNumero(int numero) throws SQLException {
-        PreparedStatement statement = this.connection.prepareStatement("""
+        Connection connection = factory.connectionFactory();
+        PreparedStatement statement = connection.prepareStatement("""
                 select * from conta 
                 where numero = ?
                 """);
@@ -84,10 +90,16 @@ public class ContaDAO {
 
         statement.close();
         result.close();
+        disconnect(connection);
         return conta;
     }
 
-    public void disconnect() throws SQLException {
-        this.connection.close();
+    public void disconnect(Connection connection) {
+        try {
+            connection.close();
+            System.out.println("connection closed.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

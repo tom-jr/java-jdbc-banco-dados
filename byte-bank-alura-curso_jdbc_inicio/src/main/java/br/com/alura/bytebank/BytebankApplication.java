@@ -46,7 +46,6 @@ public class BytebankApplication {
             }
             opcao = exibirMenu();
         }
-        service.onDestroy();
         System.out.println("Finalizando a aplicação.");
     }
 

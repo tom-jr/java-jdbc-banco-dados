@@ -82,8 +82,4 @@ public class ContaService {
                 .findFirst()
                 .orElseThrow(() -> new RegraDeNegocioException("Não existe conta cadastrada com esse número!"));
     }
-
-    public void onDestroy() throws SQLException {
-        this.dao.disconnect();
-    }
 }
