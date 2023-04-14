@@ -14,7 +14,7 @@ public class BytebankApplication {
     private static ContaService service = new ContaService(new ContaDAO());
     private static Scanner teclado = new Scanner(System.in).useDelimiter("\n");
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         var opcao = exibirMenu();
         while (opcao != 7) {
             try {
@@ -45,7 +45,7 @@ public class BytebankApplication {
             }
             opcao = exibirMenu();
         }
-
+        service.onDestroy();
         System.out.println("Finalizando a aplicação.");
     }
 
@@ -63,7 +63,7 @@ public class BytebankApplication {
         return teclado.nextInt();
     }
 
-    private static void listarContas() {
+    private static void listarContas() throws SQLException {
         System.out.println("Contas cadastradas:");
         var contas = service.listarContasAbertas();
         contas.stream().forEach(System.out::println);

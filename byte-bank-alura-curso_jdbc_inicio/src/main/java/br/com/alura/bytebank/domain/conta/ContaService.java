@@ -5,6 +5,7 @@ import br.com.alura.bytebank.domain.cliente.Cliente;
 import br.com.alura.bytebank.repostory.ContaDAO;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,8 +18,8 @@ public class ContaService {
         this.dao = dao;
     }
 
-    public Set<Conta> listarContasAbertas() {
-        return contas;
+    public Set<Conta> listarContasAbertas() throws SQLException {
+        return dao.listarContas();
     }
 
     public BigDecimal consultarSaldo(Integer numeroDaConta) {
@@ -75,5 +76,9 @@ public class ContaService {
                 .filter(c -> c.getNumero() == numero)
                 .findFirst()
                 .orElseThrow(() -> new RegraDeNegocioException("Não existe conta cadastrada com esse número!"));
+    }
+
+    public void onDestroy() throws SQLException {
+        this.dao.disconnect();
     }
 }
