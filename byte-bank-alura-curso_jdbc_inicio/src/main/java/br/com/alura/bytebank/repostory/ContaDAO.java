@@ -21,7 +21,8 @@ public class ContaDAO {
         this.connection = new ConnectionFactory().connectionFactory();
     }
 
-    public void salvar(Conta conta){
+    public void salvar(Conta conta) throws SQLException {
+
         String sql = """
                 insert into conta
                     (numero, saldo, cliente_nome, cliente_cpf, client_email)
@@ -29,8 +30,9 @@ public class ContaDAO {
                     """;
 
 
+        PreparedStatement statement = null;
         try {
-            PreparedStatement statement = this.connection.prepareStatement(sql);
+            statement = this.connection.prepareStatement(sql);
             statement.setInt(1, conta.getNumero());
             statement.setBigDecimal(2, BigDecimal.ZERO);
             statement.setString(3, conta.getTitular().getNome());
@@ -41,6 +43,8 @@ public class ContaDAO {
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
+        } finally {
+            statement.close();
         }
     }
 
@@ -58,7 +62,29 @@ public class ContaDAO {
                             result.getString(4),
                             result.getString(5)))));
         }
+        statement.close();
+        result.close();
         return contas;
+    }
+
+
+    public Conta buscarContarPorNumero(int numero) throws SQLException {
+        PreparedStatement statement = this.connection.prepareStatement("""
+                select * from conta 
+                where numero = ?
+                """);
+        statement.setInt(1, numero);
+
+        ResultSet result = statement.executeQuery();
+        result.next();
+        Conta conta = new Conta(result.getInt(1), result.getBigDecimal(2),
+                new Cliente(new DadosCadastroCliente(result.getString(3),
+                        result.getString(4),
+                        result.getString(5))));
+
+        statement.close();
+        result.close();
+        return conta;
     }
 
     public void disconnect() throws SQLException {

@@ -2,6 +2,7 @@ package br.com.alura.bytebank;
 
 import br.com.alura.bytebank.domain.RegraDeNegocioException;
 import br.com.alura.bytebank.domain.cliente.DadosCadastroCliente;
+import br.com.alura.bytebank.domain.conta.Conta;
 import br.com.alura.bytebank.domain.conta.ContaService;
 import br.com.alura.bytebank.domain.conta.DadosAberturaConta;
 import br.com.alura.bytebank.repostory.ContaDAO;
@@ -106,8 +107,9 @@ public class BytebankApplication {
     private static void consultarSaldo() {
         System.out.println("Digite o número da conta:");
         var numeroDaConta = teclado.nextInt();
-        var saldo = service.consultarSaldo(numeroDaConta);
-        System.out.println("Saldo da conta: " +saldo);
+        Conta conta = service.consultarSaldo(numeroDaConta);
+        System.out.println("Titular: " + conta.getTitular().getNome());
+        System.out.println("Saldo da conta: " + conta.getSaldo());
 
         System.out.println("Pressione qualquer tecla e de ENTER para voltar ao menu principal");
         teclado.next();

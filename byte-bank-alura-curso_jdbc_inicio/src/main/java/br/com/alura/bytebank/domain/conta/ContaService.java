@@ -22,12 +22,17 @@ public class ContaService {
         return dao.listarContas();
     }
 
-    public BigDecimal consultarSaldo(Integer numeroDaConta) {
-        var conta = buscarContaPorNumero(numeroDaConta);
-        return conta.getSaldo();
+    public Conta consultarSaldo(Integer numeroDaConta) {
+        Conta conta = null;
+        try {
+            conta = dao.buscarContarPorNumero(numeroDaConta);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return conta;
     }
 
-    public void abrir(DadosAberturaConta dadosDaConta) {
+    public void abrir(DadosAberturaConta dadosDaConta) throws SQLException {
         var cliente = new Cliente(dadosDaConta.dadosCliente());
         var conta = new Conta(dadosDaConta.numero(), cliente);
         if (contas.contains(conta)) {
