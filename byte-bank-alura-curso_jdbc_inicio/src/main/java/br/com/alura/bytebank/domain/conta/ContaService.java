@@ -44,8 +44,8 @@ public class ContaService {
         dao.salvar(conta);
     }
 
-    public void realizarSaque(Integer numeroDaConta, BigDecimal valor) {
-        var conta = buscarContaPorNumero(numeroDaConta);
+    public void realizarSaque(Integer numeroDaConta, BigDecimal valor) throws SQLException {
+        var conta = dao.buscarContarPorNumero(numeroDaConta);
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RegraDeNegocioException("Valor do saque deve ser superior a zero!");
         }
@@ -55,6 +55,7 @@ public class ContaService {
         }
 
         conta.sacar(valor);
+        dao.atualizarSaldo(conta);
     }
 
     public void realizarDeposito(Integer numeroDaConta, BigDecimal valor) throws SQLException {
@@ -64,7 +65,7 @@ public class ContaService {
         }
 
         conta.depositar(valor);
-        dao.atualizar(conta);
+        dao.atualizarSaldo(conta);
     }
 
     public void encerrar(Integer numeroDaConta) {

@@ -102,7 +102,7 @@ public class ContaDAO {
         }
     }
 
-    public void atualizar(Conta conta) {
+    public void atualizarSaldo(Conta conta) {
      String sql = """
              update conta
               set saldo = ? 
