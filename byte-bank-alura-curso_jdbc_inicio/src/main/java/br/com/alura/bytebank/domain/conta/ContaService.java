@@ -57,13 +57,14 @@ public class ContaService {
         conta.sacar(valor);
     }
 
-    public void realizarDeposito(Integer numeroDaConta, BigDecimal valor) {
-        var conta = buscarContaPorNumero(numeroDaConta);
+    public void realizarDeposito(Integer numeroDaConta, BigDecimal valor) throws SQLException {
+        Conta conta = dao.buscarContarPorNumero(numeroDaConta);
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RegraDeNegocioException("Valor do deposito deve ser superior a zero!");
         }
 
         conta.depositar(valor);
+        dao.atualizar(conta);
     }
 
     public void encerrar(Integer numeroDaConta) {

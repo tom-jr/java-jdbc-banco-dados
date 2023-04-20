@@ -21,7 +21,6 @@ public class Conta {
         this.numero = numero;
         this.saldo = saldo;
         this.titular = titular;
-        this.saldo = BigDecimal.ZERO;
     }
 
     public boolean possuiSaldo() {

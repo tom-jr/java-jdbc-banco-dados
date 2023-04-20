@@ -1,5 +1,6 @@
 package br.com.alura.bytebank.repostory;
 
+import br.com.alura.bytebank.ConnectionFactory;
 import br.com.alura.bytebank.domain.cliente.Cliente;
 import br.com.alura.bytebank.domain.cliente.DadosCadastroCliente;
 import br.com.alura.bytebank.domain.conta.Conta;
@@ -11,8 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
-
-import br.com.alura.bytebank.ConnectionFactory;
 
 public class ContaDAO {
     private final ConnectionFactory factory;
@@ -98,6 +97,28 @@ public class ContaDAO {
         try {
             connection.close();
             System.out.println("connection closed.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void atualizar(Conta conta) {
+     String sql = """
+             update conta
+              set saldo = ? 
+              where
+              conta.numero = ?;
+             """;
+        PreparedStatement statement;
+        Connection connection = factory.connectionFactory();
+        try {
+           statement  = connection.prepareStatement(sql);
+           statement.setBigDecimal(1, conta.getSaldo());
+           statement.setInt(2, conta.getNumero());
+           statement.execute();
+
+           statement.close();
+           disconnect(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
