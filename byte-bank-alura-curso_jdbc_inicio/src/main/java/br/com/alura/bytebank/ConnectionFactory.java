@@ -1,4 +1,8 @@
 package br.com.alura.bytebank;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -16,11 +20,23 @@ public class ConnectionFactory {
 
             System.out.println("connection opened.");
 
-            return DriverManager.getConnection(url, properties);
-
+//            return DriverManager.getConnection(url, properties);
+            //Utilizando o Hikari para ter pool de conexão
+            return createDataSource().getConnection();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
+
+    private HikariDataSource createDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost/byte_bank");
+        config.setUsername("postgres");
+        config.setPassword("postgres");
+        config.setMaximumPoolSize(10);
+
+        return new HikariDataSource(config);
+    }
+
 }
