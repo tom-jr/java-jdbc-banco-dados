@@ -7,6 +7,7 @@ import br.com.alura.bytebank.domain.conta.ContaService;
 import br.com.alura.bytebank.domain.conta.DadosAberturaConta;
 import br.com.alura.bytebank.repostory.ContaDAO;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -17,7 +18,7 @@ public class BytebankApplication {
 
     public static void main(String[] args) throws SQLException {
         var opcao = exibirMenu();
-        while (opcao != 7) {
+        while (opcao != 8) {
             try {
                 switch (opcao) {
                     case 1:
@@ -37,6 +38,10 @@ public class BytebankApplication {
                         break;
                     case 6:
                         realizarDeposito();
+                        break;
+
+                    case 7:
+                        realizarTransferencia();
                         break;
                 }
             } catch (RegraDeNegocioException | SQLException e) {
@@ -58,7 +63,8 @@ public class BytebankApplication {
                 4 - Consultar saldo de uma conta
                 5 - Realizar saque em uma conta
                 6 - Realizar depósito em uma conta
-                7 - Sair
+                7 - Realizar transferencia entre contas
+                8 - Sair
                 """);
         return teclado.nextInt();
     }
@@ -68,8 +74,7 @@ public class BytebankApplication {
         var contas = service.listarContasAbertas();
         contas.stream().forEach(System.out::println);
 
-        System.out.println("Pressione qualquer tecla e de ENTER para voltar ao menu principal");
-        teclado.next();
+        finalMessage();
     }
 
     private static void abrirConta() throws SQLException {
@@ -88,19 +93,17 @@ public class BytebankApplication {
         service.abrir(new DadosAberturaConta(numeroDaConta, new DadosCadastroCliente(nome, cpf, email)));
 
         System.out.println("Conta aberta com sucesso!");
-        System.out.println("Pressione qualquer tecla e de ENTER para voltar ao menu principal");
-        teclado.next();
+        finalMessage();
     }
 
-    private static void encerrarConta() {
+    private static void encerrarConta() throws SQLException {
         System.out.println("Digite o número da conta:");
         var numeroDaConta = teclado.nextInt();
 
         service.encerrar(numeroDaConta);
 
         System.out.println("Conta encerrada com sucesso!");
-        System.out.println("Pressione qualquer tecla e de ENTER para voltar ao menu principal");
-        teclado.next();
+        finalMessage();
     }
 
     private static void consultarSaldo() {
@@ -110,8 +113,7 @@ public class BytebankApplication {
         System.out.println("Titular: " + conta.getTitular().getNome());
         System.out.println("Saldo da conta: " + conta.getSaldo());
 
-        System.out.println("Pressione qualquer tecla e de ENTER para voltar ao menu principal");
-        teclado.next();
+        finalMessage();
     }
 
     private static void realizarSaque() throws SQLException {
@@ -123,8 +125,7 @@ public class BytebankApplication {
 
         service.realizarSaque(numeroDaConta, valor);
         System.out.println("Saque realizado com sucesso!");
-        System.out.println("Pressione qualquer tecla e de ENTER para voltar ao menu principal");
-        teclado.next();
+        finalMessage();
     }
 
     private static void realizarDeposito() throws SQLException {
@@ -137,6 +138,29 @@ public class BytebankApplication {
         service.realizarDeposito(numeroDaConta, valor);
 
         System.out.println("Depósito realizado com sucesso!");
+        finalMessage();
+    }
+
+    private static void realizarTransferencia() throws SQLException {
+        System.out.println("Digite o número da conta do autor da transfêrencia:");
+        var numeroContaAutor = teclado.nextInt();
+
+        System.out.println("Digite o valor da transfêrencia:");
+        var valor = teclado.nextBigDecimal();
+
+
+        System.out.println("Digite o número da conta do beneficiado da transfêrencia:");
+        var numeroContaBeneficiario = teclado.nextInt();
+
+        BigDecimal valorTransferencia = service.realizarSaque(numeroContaAutor, valor);
+
+
+        service.realizarDeposito(numeroContaBeneficiario, valorTransferencia);
+        System.out.println("Transfêrencia realizada com sucesso.");
+        finalMessage();
+    }
+
+    private static void finalMessage() {
         System.out.println("Pressione qualquer tecla e de ENTER para voltar ao menu principal");
         teclado.next();
     }

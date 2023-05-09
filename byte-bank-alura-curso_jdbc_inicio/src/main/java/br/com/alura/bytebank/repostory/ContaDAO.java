@@ -123,4 +123,25 @@ public class ContaDAO {
             throw new RuntimeException(e);
         }
     }
+
+    public void remove(Conta conta) {
+        String sql = """
+                delete from conta
+                where 
+                numero = ?
+                """;
+        PreparedStatement statement;
+        Connection connection = factory.connectionFactory();
+
+        try {
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, conta.getNumero());
+            statement.execute();
+
+            statement.close();
+            disconnect(connection);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -44,7 +44,7 @@ public class ContaService {
         dao.salvar(conta);
     }
 
-    public void realizarSaque(Integer numeroDaConta, BigDecimal valor) throws SQLException {
+    public BigDecimal realizarSaque(Integer numeroDaConta, BigDecimal valor) throws SQLException {
         var conta = dao.buscarContarPorNumero(numeroDaConta);
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RegraDeNegocioException("Valor do saque deve ser superior a zero!");
@@ -56,6 +56,7 @@ public class ContaService {
 
         conta.sacar(valor);
         dao.atualizarSaldo(conta);
+        return valor;
     }
 
     public void realizarDeposito(Integer numeroDaConta, BigDecimal valor) throws SQLException {
@@ -68,20 +69,12 @@ public class ContaService {
         dao.atualizarSaldo(conta);
     }
 
-    public void encerrar(Integer numeroDaConta) {
-        var conta = buscarContaPorNumero(numeroDaConta);
+    public void encerrar(Integer numeroDaConta) throws SQLException {
+        var conta = dao.buscarContarPorNumero(numeroDaConta);
         if (conta.possuiSaldo()) {
             throw new RegraDeNegocioException("Conta não pode ser encerrada pois ainda possui saldo!");
         }
 
-        contas.remove(conta);
-    }
-
-    private Conta buscarContaPorNumero(Integer numero) {
-        return contas
-                .stream()
-                .filter(c -> c.getNumero() == numero)
-                .findFirst()
-                .orElseThrow(() -> new RegraDeNegocioException("Não existe conta cadastrada com esse número!"));
+        dao.remove(conta);
     }
 }
